@@ -8,6 +8,7 @@ function Device() {
 // implementation of EventListener
 
 Device.prototype.onEvent = function(eventSource, eventInterface, eventData) {
+    // eventSource.name() for the name and eventSource.getRefId() for the unique id
     if (eventInterface == 'Thermometer') {
         gauge.set(eventData);
     }
