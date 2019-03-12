@@ -17,9 +17,9 @@ Device.prototype.onEvent = function(eventSource, eventInterface, eventData) {
 
 // implementation of HttpRequestHandler
 
-// https://ip:9443/endpoint/@scrypted/metrics/
+// https://ip:9443/endpoint/@scrypted/prometheus/
 Device.prototype.getEndpoint = function() {
-    return '@scrypted/metrics';
+    return '@scrypted/prometheus';
 };
 
 Device.prototype.onRequest = function(req, res) {
