@@ -17,9 +17,9 @@
       "type": "Library"
    },
    "devDependencies": {
-      "@scrypted/sdk": "0.0.2"
+      "@scrypted/sdk": "0.0.9"
    },
    "dependencies": {
-      "axios": "^0.18.0"
+      "prom-client": "^11.2.1"
    }
 }

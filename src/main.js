@@ -1,41 +1,27 @@
-// 1) Create a new Script under Plugins.
-// 2) Set the type to Device.
-// 3) Select/check the OnOff interface.
-// 4) Save.
-// 5) Click the Debug button.
-// 6) Edit .vcode/settings.json and set the value of "scrypted.debugHost": "THIS.IS.MY.IP"
-// 7) Launch Scrypted Debugger in VS Code.
-
-import axios from 'axios';
-
-log.i('Hello World. This will create a virtual OnOff device.');
+const client = require('prom-client');
+const {register} = client;
+const gauge = new client.Gauge({ name: 'thermometer', help: 'a fucking thermometer' });
 
 function Device() {
 }
 
-Device.prototype.isOn = function () {
-    log.i('isOn was called!');
-    return false;
-};
+// implementation of EventListener
 
-Device.prototype.turnOff = function () {
-    // set a breakpoint here.
-    log.i('turnOff was called!');
-};
-
-Device.prototype.turnOn = function () {
-    // set a breakpoint here.
-    log.i('turnOn was called!');
-
-    // turnOn must return immediately, but it can trigger other things... 
-    (async function () {
-        log.i('XMLHttpRequest is polyfilled by the Android host. This allows the popular http library axios or jquery ajax to work.');
-
-        const ip = await axios.get('http://jsonip.com');
-        log.i(`my ip: ${ip.data.ip}`);
-    })();
+Device.prototype.onEvent = function(eventSource, eventInterface, eventData) {
+    if (eventInterface == 'Thermometer') {
+        gauge.set(eventData);
+    }
 };
 
 
+// implementation of HttpRequestHandler
+
+Device.prototype.getEndpoint = function() {
+    return '@scrypted/metrics';
+};
+
+Device.prototype.onRequest = function(req, res) {
+    res.send({code: 200}, register.metrics());
+};
 
 exports.default = new Device();
