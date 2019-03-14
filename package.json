@@ -1,4 +1,13 @@
 {
+   "name": "@bekit/scrypted-prometheus",
+   "version": "0.0.1",
+   "repository": {
+      "type": "git",
+      "url": "https://github.com/bekriebel/scrypted-prometheus.git"
+   },
+   "description": "A Scrypted plugin to export event metrics for Prometheus",
+   "author": "Brint E. Kriebel",
+   "license": "Apache-2.0",
    "scripts": {
       "prepublishOnly": "NODE_ENV=production scrypted-webpack",
       "prescrypted-vscode-launch": "scrypted-webpack",
@@ -9,12 +18,18 @@
       "scrypted-webpack": "scrypted-webpack"
    },
    "keywords": [
+      "prometheus",
+      "metrics",
       "scrypted",
       "plugin"
    ],
    "scrypted": {
-      "name": "Scrypted Visual Studio Code Sample Library",
-      "type": "Library"
+      "name": "Prometheus Event Metrics",
+      "type": "Device",
+      "singleInstance": true,
+      "interfaces": [
+         "HttpRequestHandler"
+      ]
    },
    "devDependencies": {
       "@scrypted/sdk": "0.0.9"
