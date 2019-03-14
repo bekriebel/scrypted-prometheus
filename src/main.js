@@ -1,4 +1,5 @@
 const client = require('prom-client');
+const os = require('os');
 const {register} = client;
 
 if (!scriptSettings.getString('prefix') || !scriptSettings.getString('prefix')) {
@@ -6,6 +7,8 @@ if (!scriptSettings.getString('prefix') || !scriptSettings.getString('prefix')) 
 }
 
 const prefix = scriptSettings.getString('prefix');
+const metricsEndpoint = '@bekit/scrypted-prometheus';
+const oneTimeAlert = scriptSettings.getBoolean('oneTimeAlert', false);
 
 const batteryGauge = new client.Gauge({
     name: prefix + '_battery',
@@ -81,17 +84,35 @@ function alertAndThrow(msg) {
     throw new Error(msg);
 }
 
+function getIP() {
+    var ifaces = os.networkInterfaces();
+    var ipAddress = "<ip>";
 
-// implementation of EventListener
+    Object.keys(ifaces).forEach(function (ifname) {
+        ifaces[ifname].forEach(function (iface) {
+            if (ipAddress !== "<ip>" || 'IPv4' !== iface.family || iface.internal !== false) {
+                // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
+                //   and don't continue if ipAddress is already set.
+                return;
+            }
+            ipAddress = iface.address;
+        });
+    });
 
-try {
-    if (!allEvents)
-        throw new Error();
+    return ipAddress
 }
-catch {
-    alertAndThrow('Setup Incomplete: Assign the "All Events" option to the "allEvents" variable.');
+
+var metricsAddress = "https://" + getIP() + ":9443/endpoint/" + metricsEndpoint + "/public/";
+if (!oneTimeAlert) {
+    // Send this alert once and then set the variable to hide it
+    log.a("Your metrics address is: " + metricsAddress);
+    scriptSettings.putBoolean('oneTimeAlert', true);
+} else {
+    log.i("Your metrics address is: " + metricsAddress);
 }
-log.clearAlerts();
+
+// Get the events
+var allEvents = deviceManager.getDeviceByName("events");
 
 allEvents.on(null, function(eventSource, eventInterface, eventData) {
     var eventLogMessage = eventInterface + ", " +
@@ -228,9 +249,9 @@ allEvents.on(null, function(eventSource, eventInterface, eventData) {
 
 // implementation of HttpRequestHandler
 
-// https://ip:9443/endpoint/@scrypted/prometheus/
+// https://<ip>:9443/endpoint/@bekit/scrypted-prometheus/
 Device.prototype.getEndpoint = function() {
-    return '@scrypted/prometheus';
+    return metricsEndpoint;
 };
 
 Device.prototype.onRequest = function(req, res) {
