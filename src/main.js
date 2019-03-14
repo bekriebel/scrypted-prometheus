@@ -76,10 +76,24 @@ const ultravioletGauge = new client.Gauge({
 function Device() {
 }
 
+function alertAndThrow(msg) {
+    log.a(msg);
+    throw new Error(msg);
+}
+
 
 // implementation of EventListener
 
-Device.prototype.onEvent = function(eventSource, eventInterface, eventData) {
+try {
+    if (!allEvents)
+        throw new Error();
+}
+catch {
+    alertAndThrow('Setup Incomplete: Assign the "All Events" option to the "allEvents" variable.');
+}
+log.clearAlerts();
+
+allEvents.on(null, function(eventSource, eventInterface, eventData) {
     var eventLogMessage = eventInterface + ", " +
         eventSource.getRefId() + ", " +
         eventSource.type() + ", " +
@@ -209,7 +223,7 @@ Device.prototype.onEvent = function(eventSource, eventInterface, eventData) {
             log.w('non-metric event: ' + eventLogMessage);
             break;
     }
-};
+});
 
 
 // implementation of HttpRequestHandler

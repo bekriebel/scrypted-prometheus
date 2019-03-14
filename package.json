@@ -29,7 +29,10 @@
       "singleInstance": true,
       "interfaces": [
          "HttpRequestHandler"
-      ]
+      ],
+      "variables": {
+         "allEvents": "builtin:events"
+      }
    },
    "devDependencies": {
       "@scrypted/sdk": "0.0.9"
