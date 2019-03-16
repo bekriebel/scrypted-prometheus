@@ -195,8 +195,7 @@ allEvents.on(null, function(eventSource, eventInterface, eventData) {
                 type: eventSource.type(),
                 name: eventSource.name(),
             },
-            eventValue,
-            eventTime
+            eventValue
         );
     }
 });
