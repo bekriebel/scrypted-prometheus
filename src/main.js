@@ -27,6 +27,12 @@ gauges['Battery'] = new client.Gauge({
     labelNames: ['id', 'type', 'name'],
 });
 
+gauges['BinarySensor'] = new client.Gauge({
+    name: prefix + '_binary',
+    help: 'BinarySensor Value Gauge',
+    labelNames: ['id', 'type', 'name'],
+});
+
 gauges['Brightness'] = new client.Gauge({
     name: prefix + '_brightness',
     help: 'Brightness Value Gauge',
@@ -45,6 +51,12 @@ gauges['Entry'] = new client.Gauge({
     labelNames: ['id', 'type', 'name'],
 });
 
+gauges['FloodSensor'] = new client.Gauge({
+    name: prefix + '_flood',
+    help: 'FloodSensor Value Gauge',
+    labelNames: ['id', 'type', 'name'],
+});
+
 gauges['HumiditySensor'] = new client.Gauge({
     name: prefix + '_humidity',
     help: 'HumiditySensor Value Gauge',
@@ -54,6 +66,12 @@ gauges['HumiditySensor'] = new client.Gauge({
 gauges['IntrusionSensor'] = new client.Gauge({
     name: prefix + '_intrusion',
     help: 'IntrusionSensor Value Gauge',
+    labelNames: ['id', 'type', 'name'],
+});
+
+gauges['Lock'] = new client.Gauge({
+    name: prefix + '_lock',
+    help: 'Lock Value Gauge',
     labelNames: ['id', 'type', 'name'],
 });
 
