@@ -21,6 +21,7 @@ const oneTimeAlert = scriptSettings.getBoolean('oneTimeAlert', false);
 
 var gauges = {};
 
+// Event interface gauges
 gauges['Battery'] = new client.Gauge({
     name: prefix + '_battery',
     help: 'Battery Value Gauge',
@@ -105,6 +106,13 @@ gauges['UltravioletSensor'] = new client.Gauge({
     labelNames: ['id', 'type', 'name'],
 });
 
+// Latest event gauge
+gauges['LatestEvent'] = new client.Gauge({
+    name: prefix + '_latest_event',
+    help: 'Timestamp of the latest event for a device and event interface',
+    labelNames: ['id', 'type', 'name', 'interface'],
+});
+
 
 function Device() {
 }
@@ -145,6 +153,7 @@ if (!oneTimeAlert) {
 var allEvents = deviceManager.getDeviceByName("events");
 
 allEvents.on(null, function(eventSource, eventInterface, eventData) {
+    var eventTime = Date.now();
     var eventLogMessage = eventInterface + ", " +
         eventSource.getRefId() + ", " +
         eventSource.type() + ", " +
@@ -152,6 +161,17 @@ allEvents.on(null, function(eventSource, eventInterface, eventData) {
         eventData;
 
     log.d('event recieved: ' + eventLogMessage);
+
+    // Set the latest event timestamp
+    gauges['LatestEvent'].set(
+        {
+            id: eventSource.getRefId(),
+            type: eventSource.type(),
+            name: eventSource.name(),
+            interface: eventInterface,
+        },
+        eventTime
+    );
 
     // Convert boolean to number and throw out non-numerical values
     var eventValue;
@@ -176,7 +196,7 @@ allEvents.on(null, function(eventSource, eventInterface, eventData) {
                 name: eventSource.name(),
             },
             eventValue,
-            Date.now()
+            eventTime
         );
     }
 });
