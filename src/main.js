@@ -2,12 +2,21 @@ const client = require('prom-client');
 const os = require('os');
 const {register} = client;
 
-if (!scriptSettings.getString('prefix') || !scriptSettings.getString('prefix')) {
-    scriptSettings.putString('prefix', 'scrypted')
+const prefixDefault = 'scrypted';
+const metricsEndpoint = '@bekit/scrypted-prometheus';
+
+// Use the default prefix if another prefix hasn't been set
+const prefixSetting = scriptSettings.getString('prefix');
+const prefix = (prefixSetting && prefixSetting.length) ? prefixSetting : prefixDefault;
+
+if (prefixSetting != prefix) {
+    log.i("Setting default metric prefix: " + prefix);
+    scriptSettings.putString('prefix', prefix);
+} else {
+    log.i("Using metric prefix: " + prefix);
 }
 
-const prefix = scriptSettings.getString('prefix');
-const metricsEndpoint = '@bekit/scrypted-prometheus';
+// See if our oneTimeAlerts have already been triggered
 const oneTimeAlert = scriptSettings.getBoolean('oneTimeAlert', false);
 
 const batteryGauge = new client.Gauge({
