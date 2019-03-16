@@ -19,68 +19,71 @@ if (prefixSetting != prefix) {
 // See if our oneTimeAlerts have already been triggered
 const oneTimeAlert = scriptSettings.getBoolean('oneTimeAlert', false);
 
-const batteryGauge = new client.Gauge({
+var gauges = {};
+
+gauges['Battery'] = new client.Gauge({
     name: prefix + '_battery',
     help: 'Battery Value Gauge',
     labelNames: ['id', 'type', 'name'],
 });
 
-const brightnessGauge = new client.Gauge({
+gauges['Brightness'] = new client.Gauge({
     name: prefix + '_brightness',
     help: 'Brightness Value Gauge',
     labelNames: ['id', 'type', 'name'],
 });
 
-const colorSettingTemperatureGauge = new client.Gauge({
+gauges['ColorSettingTemperature'] = new client.Gauge({
     name: prefix + '_colorsetting_temperature',
     help: 'ColorSettingTemperature Value Gauge',
     labelNames: ['id', 'type', 'name'],
 });
 
-const entryGauge = new client.Gauge({
+gauges['Entry'] = new client.Gauge({
     name: prefix + '_entry',
     help: 'Entry Value Gauge',
     labelNames: ['id', 'type', 'name'],
 });
 
-const humidityGauge = new client.Gauge({
+gauges['HumiditySensor'] = new client.Gauge({
     name: prefix + '_humidity',
-    help: 'Humidity Value Gauge',
+    help: 'HumiditySensor Value Gauge',
     labelNames: ['id', 'type', 'name'],
 });
 
-const intrusionGauge = new client.Gauge({
+gauges['IntrusionSensor'] = new client.Gauge({
     name: prefix + '_intrusion',
-    help: 'Intrusion Value Gauge',
+    help: 'IntrusionSensor Value Gauge',
     labelNames: ['id', 'type', 'name'],
 });
 
-const luminanceGauge = new client.Gauge({
+gauges['LuminanceSensor'] = new client.Gauge({
     name: prefix + '_luminance',
-    help: 'Luminance Value Gauge',
+    help: 'LuminanceSensor Value Gauge',
     labelNames: ['id', 'type', 'name'],
 });
 
-const onlineGauge = new client.Gauge({
+gauges['Online'] = new client.Gauge({
     name: prefix + '_online',
     help: 'Online Value Gauge',
     labelNames: ['id', 'type', 'name'],
 });
-const onOffGauge = new client.Gauge({
+
+gauges['OnOff'] = new client.Gauge({
     name: prefix + '_onoff',
     help: 'OnOff Value Gauge',
     labelNames: ['id', 'type', 'name'],
 });
 
-const thermometerGauge = new client.Gauge({
+gauges['Thermometer'] = new client.Gauge({
     name: prefix + '_thermometer',
     help: 'Thermometer Value Gauge',
     labelNames: ['id', 'type', 'name'],
 });
 
-const ultravioletGauge = new client.Gauge({
+gauges['UltravioletSensor'] = new client.Gauge({
     name: prefix + '_ultraviolet',
-    help: 'Ultraviolet Value Gauge',
+    help: 'UltravioletSensor Value Gauge',
     labelNames: ['id', 'type', 'name'],
 });
 
@@ -130,128 +133,32 @@ allEvents.on(null, function(eventSource, eventInterface, eventData) {
         eventSource.name() + ", " +
         eventData;
 
-    // Don't bother with non-numerical data types
-    if (isNaN(eventData)) {
-        log.d('eventData non-numerical: ' + eventLogMessage);
-        return;
-    }
-
     log.d('event recieved: ' + eventLogMessage);
 
-    switch (eventInterface) {
-        case 'Battery':
-            batteryGauge.set(
-                {
-                    id: eventSource.getRefId(),
-                    type: eventSource.type(),
-                    name: eventSource.name(),
-                },
-                eventData
-            );
+    // Convert boolean to number and throw out non-numerical values
+    var eventValue;
+    switch (typeof eventData) {
+        case 'number':
+            eventValue = eventData;
             break;
-        case 'Brightness':
-            brightnessGauge.set(
-                {
-                    id: eventSource.getRefId(),
-                    type: eventSource.type(),
-                    name: eventSource.name(),
-                },
-                eventData
-            );
-            break;
-        case 'ColorSettingTemperature':
-            colorSettingTemperatureGauge.set(
-                {
-                    id: eventSource.getRefId(),
-                    type: eventSource.type(),
-                    name: eventSource.name(),
-                },
-                eventData
-            );
-            break;
-        case 'Entry':
-            entryGauge.set(
-                {
-                    id: eventSource.getRefId(),
-                    type: eventSource.type(),
-                    name: eventSource.name(),
-                },
-                eventData ? 1 : 0
-            );
-            break;
-        case 'HumiditySensor':
-            humidityGauge.set(
-                {
-                    id: eventSource.getRefId(),
-                    type: eventSource.type(),
-                    name: eventSource.name(),
-                },
-                eventData
-            );
-            break;
-        case 'IntrusionSensor':
-            intrusionGauge.set(
-                {
-                    id: eventSource.getRefId(),
-                    type: eventSource.type(),
-                    name: eventSource.name(),
-                },
-                eventData ? 1 : 0
-            );
-            break;
-        case 'LuminanceSensor':
-            luminanceGauge.set(
-                {
-                    id: eventSource.getRefId(),
-                    type: eventSource.type(),
-                    name: eventSource.name(),
-                },
-                eventData
-            );
-            break;
-        case 'Online':
-            onlineGauge.set(
-                {
-                    id: eventSource.getRefId(),
-                    type: eventSource.type(),
-                    name: eventSource.name(),
-                },
-                eventData ? 1 : 0
-            );
-            break;
-        case 'OnOff':
-            onOffGauge.set(
-                {
-                    id: eventSource.getRefId(),
-                    type: eventSource.type(),
-                    name: eventSource.name(),
-                },
-                eventData ? 1 : 0
-            );
-            break;
-        case 'Thermometer':
-            thermometerGauge.set(
-                {
-                    id: eventSource.getRefId(),
-                    type: eventSource.type(),
-                    name: eventSource.name(),
-                },
-                eventData
-            );
-            break;
-        case 'UltravioletSensor':
-            ultravioletGauge.set(
-                {
-                    id: eventSource.getRefId(),
-                    type: eventSource.type(),
-                    name: eventSource.name(),
-                },
-                eventData
-            );
+        case 'boolean':
+            eventValue = eventData ? 1 : 0;
             break;
         default:
-            log.w('non-metric event: ' + eventLogMessage);
-            break;
+            return;
+    }
+
+    if (!(eventInterface in gauges)) {
+        log.w('non-metric event: ' + eventLogMessage);
+    } else {
+        gauges[eventInterface].set(
+            {
+                id: eventSource.getRefId(),
+                type: eventSource.type(),
+                name: eventSource.name(),
+            },
+            eventValue
+        );
     }
 });
 
