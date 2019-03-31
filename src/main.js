@@ -9,6 +9,9 @@ const metricsEndpoint = '@bekit/scrypted-prometheus';
 const prefixSetting = scriptSettings.getString('prefix');
 const prefix = (prefixSetting && prefixSetting.length) ? prefixSetting : prefixDefault;
 
+const sdk = require('@scrypted/sdk').default;
+const {systemManager} = sdk;
+
 if (prefixSetting != prefix) {
     log.i("Setting default metric prefix: " + prefix);
     scriptSettings.putString('prefix', prefix);
@@ -150,11 +153,13 @@ if (!oneTimeAlert) {
 }
 
 // Get the events
-var allEvents = deviceManager.getDeviceByName("events");
+var allEvents = systemManager.getDeviceByName("events");
 
-allEvents.on(null, function(eventSource, eventInterface, eventData) {
+allEvents.listen(null, function(eventSource, eventDetails, eventData) {
+    const {eventInterface, property} = eventDetails;
     var eventTime = Date.now();
     var eventLogMessage = eventInterface + ", " +
+        property + ", " +
         eventSource.getRefId() + ", " +
         eventSource.type() + ", " +
         eventSource.name() + ", " +
